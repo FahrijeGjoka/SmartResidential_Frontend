@@ -1,1 +1,0 @@
-# SmartResidential_Frontend
