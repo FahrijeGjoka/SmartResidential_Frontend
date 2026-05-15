@@ -1,11 +1,15 @@
 export type JwtClaims = {
   sub?: string;
-  userId?: number;
-  tenantId?: number;
+  userId?: number | string;
+  id?: number | string;
+  user_id?: number | string;
+  tenantId?: number | string;
+  tenant_id?: number | string;
   identifier?: string;
   schemaName?: string;
-  roleName?: number;
+  roleName?: number | string;
   exp?: number;
+  [claim: string]: unknown;
 };
 
 function base64UrlDecode(segment: string): string {
@@ -28,4 +32,19 @@ export function decodeJwtPayload(token: string): JwtClaims | null {
   } catch {
     return null;
   }
+}
+
+export function numericJwtClaim(...values: unknown[]): number | null {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+    if (typeof value === "string" && value.trim()) {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+  }
+  return null;
 }
