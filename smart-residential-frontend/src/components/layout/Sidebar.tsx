@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Building2,
   Home,
@@ -19,16 +20,35 @@ import {
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/context/AuthContext";
 import { isStaffOrAdmin, isAdmin } from "@/utils/roles";
+import { notificationApi } from "@/services/notificationService";
 
 const linkBase =
   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-white/80 hover:text-indigo-900";
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const { role } = useAuth();
+  const { role, userId } = useAuth();
   const staff = isStaffOrAdmin(role);
   const admin = isAdmin(role);
 
-  const Item = ({ to, icon: Icon, label }: { to: string; icon: typeof Home; label: string }) => (
+  const unreadQ = useQuery({
+    queryKey: ["notifications", "unread", userId],
+    queryFn: () => notificationApi.unread(userId!),
+    enabled: Boolean(userId),
+    staleTime: 30_000,
+  });
+  const unreadCount = unreadQ.data?.length ?? 0;
+
+  const Item = ({
+    to,
+    icon: Icon,
+    label,
+    badge,
+  }: {
+    to: string;
+    icon: typeof Home;
+    label: string;
+    badge?: number;
+  }) => (
     <NavLink
       to={to}
       onClick={onNavigate}
@@ -37,7 +57,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       }
     >
       <Icon className="h-5 w-5 shrink-0 opacity-80" />
-      {label}
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {badge ? (
+        <span className="ml-auto min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[11px] font-semibold leading-4 text-white">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
     </NavLink>
   );
 
@@ -60,7 +85,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Item to="/app/issues" icon={Wrench} label="Service issues" />
         <Item to="/app/maintenance" icon={ClipboardList} label="Maintenance requests" />
         <Item to="/app/announcements" icon={Megaphone} label="Announcements" />
-        <Item to="/app/notifications" icon={Bell} label="Notifications" />
+        <Item to="/app/notifications" icon={Bell} label="Notifications" badge={unreadCount} />
         {staff ? <Item to="/app/technicians" icon={Users2} label="Technicians" /> : null}
         {staff ? <Item to="/app/categories" icon={Tags} label="Issue categories" /> : null}
         {admin ? <Item to="/app/admin/users" icon={Shield} label="Admin · Users" /> : null}

@@ -17,7 +17,7 @@ import {
 } from "@/services/api";
 import { authApi } from "@/services/authService";
 import { sessionApi } from "@/services/sessionService";
-import { decodeJwtPayload } from "@/utils/jwt";
+import { decodeJwtPayload, numericJwtClaim } from "@/utils/jwt";
 import type { RegisterRequest } from "@/types";
 
 type LoginInput = { email: string; password: string; tenantIdentifier: string };
@@ -54,8 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const claims = useMemo(() => (token ? decodeJwtPayload(token) : null), [token]);
-  const userId = claims?.userId ?? null;
-  const tenantId = claims?.tenantId ?? null;
+  const userId = claims
+    ? numericJwtClaim(
+        claims.userId,
+        claims.id,
+        claims.user_id,
+        claims.sub,
+        claims["nameid"],
+        claims["nameidentifier"],
+        claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]
+      )
+    : null;
+  const tenantId = claims ? numericJwtClaim(claims.tenantId, claims.tenant_id) : null;
 
   const setTenantIdentifier = useCallback((id: string) => {
     const v = id.trim();
