@@ -40,7 +40,7 @@ export default function AnnouncementsPage() {
     mutationFn: (body: CreateBuildingAnnouncementRequest) => announcementApi.create(body),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["announcements"] });
-      toast.success("Njoftimi u publikua");
+      toast.success("Announcement published");
       setModal(null);
       form.reset();
     },
@@ -51,7 +51,7 @@ export default function AnnouncementsPage() {
       announcementApi.update(id, body),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["announcements"] });
-      toast.success("Njoftimi u përditësua");
+      toast.success("Announcement updated");
       setModal(null);
       setSelected(null);
     },
@@ -61,7 +61,7 @@ export default function AnnouncementsPage() {
     mutationFn: announcementApi.remove,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["announcements"] });
-      toast.success("Njoftimi u hoq");
+      toast.success("Announcement removed");
     },
   });
 
@@ -74,8 +74,8 @@ export default function AnnouncementsPage() {
   return (
     <div>
       <PageHeader
-        title="Njoftimet"
-        description="Njoftime për banorët, sipas ndërtesës."
+        title="Announcements"
+        description="Announcements for residents by building."
         action={
           <Button
             className="gap-2"
@@ -128,7 +128,7 @@ export default function AnnouncementsPage() {
               </div>
               <p className="mt-3 flex-1 whitespace-pre-wrap text-sm text-slate-600">{a.message}</p>
               <p className="mt-4 text-xs text-slate-400">
-                {a.createdAt ? new Date(a.createdAt).toLocaleString() : ""} · by user #{a.createdBy}
+                {a.createdAt ? new Date(a.createdAt).toLocaleString() : ""} - by user #{a.createdBy}
               </p>
             </Card>
           ))

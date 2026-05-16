@@ -10,9 +10,9 @@ import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 
 const schema = z.object({
-  tenantIdentifier: z.string().min(1, "Shkruani kodin e organizatës"),
-  email: z.string().email("Email jo i vlefshëm"),
-  password: z.string().min(1, "Shkruani fjalëkalimin"),
+  tenantIdentifier: z.string().min(1, "Enter the organization code"),
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(1, "Enter your password"),
 });
 
 type Form = z.infer<typeof schema>;
@@ -34,7 +34,7 @@ export default function LoginPage() {
         password: data.password,
         tenantIdentifier: data.tenantIdentifier,
       });
-      toast.success("Mirë se vini!");
+      toast.success("Welcome!");
       navigate("/app/dashboard", { replace: true });
     } catch {
       /* toast from axios */
@@ -53,14 +53,14 @@ export default function LoginPage() {
             SmartResidential
           </h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
-            Shkruani kodin e organizatës që ju dha administratori, pastaj emailin dhe fjalëkalimin.
+            Enter the organization code your administrator gave you, then your email and password.
           </p>
         </div>
         <Card className="border-indigo-100/80 bg-white/90 shadow-xl backdrop-blur-sm">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Kodi i organizatës</label>
-              <Input placeholder="p.sh. skyline-towers" {...register("tenantIdentifier")} />
+              <label className="mb-1 block text-xs font-medium text-slate-600">Organization code</label>
+              <Input placeholder="e.g. skyline-towers" {...register("tenantIdentifier")} />
               {errors.tenantIdentifier ? (
                 <p className="mt-1 text-xs text-red-600">{errors.tenantIdentifier.message}</p>
               ) : null}
@@ -78,19 +78,19 @@ export default function LoginPage() {
               ) : null}
             </div>
             <Button type="submit" className="w-full shadow-md" loading={isSubmitting}>
-              Hyr
+              Sign in
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-slate-600">
-            Banor i ri?{" "}
+            New resident?{" "}
             <Link className="font-medium text-primary hover:underline" to="/register">
-              Krijo llogari
+              Create account
             </Link>
           </p>
           <p className="mt-2 text-center text-sm text-slate-600">
-            Organizatë e re?{" "}
+            New organization?{" "}
             <Link className="font-medium text-accent hover:underline" to="/onboarding">
-              Regjistro kompaninë
+              Register company
             </Link>
           </p>
         </Card>

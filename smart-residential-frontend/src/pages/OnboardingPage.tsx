@@ -15,11 +15,11 @@ const schema = z.object({
   identifier: z
     .string()
     .min(2)
-    .regex(/^[a-z0-9-]+$/i, "Lejohen shkronja, numra dhe vizë"),
+    .regex(/^[a-z0-9-]+$/i, "Letters, numbers, and hyphens are allowed"),
   schemaName: z
     .string()
     .min(2)
-    .regex(/^[a-z_][a-z0-9_]*$/i, "Lejohen shkronja, numra dhe nënvizë (p.sh. tenant_emri)"),
+    .regex(/^[a-z_][a-z0-9_]*$/i, "Letters, numbers, and underscores are allowed (e.g. tenant_name)"),
 });
 
 type Form = z.infer<typeof schema>;
@@ -42,7 +42,7 @@ export default function OnboardingPage() {
         schemaName: data.schemaName,
       });
       setTenantIdentifier(res.identifier);
-      toast.success("Organizata u krijua. Ruajeni kodin — do t'ju duhet për hyrje dhe regjistrim banorësh.");
+      toast.success("Organization created. Save the code. You will need it for sign-in and resident registration.");
       navigate("/register", { replace: true });
     } catch {
       /* axios */
@@ -54,32 +54,32 @@ export default function OnboardingPage() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-indigo-100/80 to-transparent" />
       <div className="relative">
       <PageHeader
-        title="Krijo organizatë"
-        description="Hapi i parë për kompaninë tuaj: emri, kodi publik (slug) dhe emri i bazës së të dhënave. Ruajeni kodin pasi të krijohet."
+        title="Create organization"
+        description="The first step for your company: name, public code, and database name. Save the code after it is created."
       />
       <Card className="border-indigo-100/80 bg-gradient-to-br from-white to-indigo-50/50 shadow-card">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Emri i kompanisë</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600">Company name</label>
             <Input {...register("name")} />
             {errors.name ? <p className="mt-1 text-xs text-red-600">{errors.name.message}</p> : null}
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-600">Kodi publik (slug)</label>
-            <Input placeholder="p.sh. skyline-towers" {...register("identifier")} />
+            <Input placeholder="e.g. skyline-towers" {...register("identifier")} />
             {errors.identifier ? (
               <p className="mt-1 text-xs text-red-600">{errors.identifier.message}</p>
             ) : null}
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Emri i bazës së të dhënave</label>
-            <Input placeholder="p.sh. tenant_skyline" {...register("schemaName")} />
+            <label className="mb-1 block text-xs font-medium text-slate-600">Database name</label>
+            <Input placeholder="e.g. tenant_skyline" {...register("schemaName")} />
             {errors.schemaName ? (
               <p className="mt-1 text-xs text-red-600">{errors.schemaName.message}</p>
             ) : null}
           </div>
           <Button type="submit" className="w-full shadow-md" loading={isSubmitting}>
-            Krijo organizatën
+            Create organization
           </Button>
         </form>
       </Card>

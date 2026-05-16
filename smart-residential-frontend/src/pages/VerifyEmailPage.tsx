@@ -36,7 +36,7 @@ export default function VerifyEmailPage() {
         {status === "loading" ? (
           <div className="flex flex-col items-center py-8">
             <Spinner />
-            <p className="mt-4 text-sm text-slate-600">Confirming your email…</p>
+            <p className="mt-4 text-sm text-slate-600">Confirming your email...</p>
           </div>
         ) : (
           <>
