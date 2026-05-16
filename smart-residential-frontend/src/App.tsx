@@ -17,6 +17,7 @@ import MaintenancePage from "@/pages/MaintenancePage";
 import AnnouncementsPage from "@/pages/AnnouncementsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
+import AuditLogsPage from "@/pages/AuditLogsPage";
 import CategoriesPage from "@/pages/CategoriesPage";
 import TechniciansPage from "@/pages/TechniciansPage";
 import ProfilePage from "@/pages/ProfilePage";
@@ -92,6 +93,14 @@ export default function App() {
           element={
             <AdminRoute>
               <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/audit-logs"
+          element={
+            <AdminRoute>
+              <AuditLogsPage />
             </AdminRoute>
           }
         />

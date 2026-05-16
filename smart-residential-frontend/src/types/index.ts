@@ -171,3 +171,12 @@ export type SessionEntity = {
   createdAt: string;
   user?: User;
 };
+
+export type AuditLogResponseDTO = {
+  id: number;
+  userId: number;
+  action: string;
+  entityType: string;
+  entityId: number;
+  createdAt: string;
+};
