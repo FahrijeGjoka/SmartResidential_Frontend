@@ -1,6 +1,6 @@
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 import { toast } from "sonner";
-import { userFacingHttpMessage } from "@/utils/httpErrors";
+import { getErrorMessages } from "@/utils/apiErrors";
 
 const TOKEN_KEY = "sr_access_token";
 const TENANT_KEY = "sr_tenant_identifier";
@@ -54,36 +54,52 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = getStoredToken();
   const tenant = getStoredTenantIdentifier();
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   if (tenant) {
     config.headers["X-Tenant-Identifier"] = tenant;
   }
+
   return config;
 });
 
 api.interceptors.response.use(
   (res) => res,
-  (error: AxiosError<{ error?: string; message?: string }>) => {
-    const serverRaw =
-      error.response?.data?.error ||
-      error.response?.data?.message ||
-      error.message ||
-      "";
-    const status = error.response?.status;
+  (error) => {
+    const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+
     if (status === 401) {
       const onAuthPage =
         window.location.pathname.startsWith("/login") ||
         window.location.pathname.startsWith("/register");
+
       if (!onAuthPage) {
         clearSession();
-        toast.error("Your session expired. Please sign in again.");
+        toast.error("Session expired. Please sign in again.");
         window.location.assign("/login");
+      } else {
+        toastErrorMessages(error);
       }
-    } else if (status && status >= 400) {
-      toast.error(userFacingHttpMessage(status, serverRaw));
+    } else if ((status && status >= 400) || !status) {
+      toastErrorMessages(error);
     }
+
     return Promise.reject(error);
   }
 );
+
+function toastErrorMessages(error: unknown) {
+  const messages = getErrorMessages(error);
+
+  if (messages.length === 1) {
+    toast.error(messages[0]);
+    return;
+  }
+
+  toast.error("Please fix the following errors:", {
+    description: messages.join("\n"),
+  });
+}

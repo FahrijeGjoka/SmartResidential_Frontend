@@ -65,7 +65,7 @@ export default function NotificationsPage() {
   });
 
   const markReadM = useMutation({
-    mutationFn: notificationApi.markRead,
+    mutationFn: (id: number) => notificationApi.markRead(id),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["notifications", userId] }),
@@ -73,6 +73,7 @@ export default function NotificationsPage() {
       ]);
     },
   });
+
 
   const markAllReadM = useMutation({
     mutationFn: () => notificationApi.markAllRead(userId!),
@@ -88,6 +89,7 @@ export default function NotificationsPage() {
     () => sortNotifications(notificationsQ.data ?? []),
     [notificationsQ.data]
   );
+  
   const unreadCount = notifications.filter((notification) => !notification.isRead).length;
   const isLoading = notificationsQ.isLoading || notificationsQ.isFetching;
   const hasNotifications = notifications.length > 0;

@@ -37,7 +37,7 @@ export default function RegisterPage() {
       });
       toast.success("Registration received. Check your email to verify the account before signing in.");
     } catch {
-      /* axios */
+      /* Error toast is handled globally by the Axios interceptor. */
     }
   };
 
