@@ -37,7 +37,7 @@ export default function LoginPage() {
       toast.success("Mirë se vini!");
       navigate("/app/dashboard", { replace: true });
     } catch {
-      /* toast from axios */
+      /* Error toast is handled globally by the Axios interceptor. */
     }
   };
 
