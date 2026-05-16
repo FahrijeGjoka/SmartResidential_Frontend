@@ -22,7 +22,7 @@ function base64UrlDecode(segment: string): string {
   );
 }
 
-/** Decode JWT payload for UI claims only — authorization is always enforced by the API. */
+/** Decode JWT payload for UI claims only - authorization is always enforced by the API. */
 export function decodeJwtPayload(token: string): JwtClaims | null {
   try {
     const parts = token.split(".");

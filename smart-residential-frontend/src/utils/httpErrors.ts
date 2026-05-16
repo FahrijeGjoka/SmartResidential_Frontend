@@ -1,24 +1,24 @@
-/** Mesazhe të lexueshme për përdoruesin — pa detaje teknike të API-së. */
+/** User-friendly messages without leaking low-level API details. */
 
 export function userFacingHttpMessage(status: number | undefined, serverText: string): string {
   const raw = (serverText || "").trim();
   const lower = raw.toLowerCase();
 
   if (status === 403) {
-    return "Nuk keni akses (403). Zakonisht: roli juaj nuk lejon këtë veprim, ose në sistem ende nuk ka të dhëna të nevojshme (p.sh. lista e plotë vetëm për staf).";
+    return "You do not have access (403). Your role may not allow this action, or required system data may be missing.";
   }
 
   if (status === 400) {
     if (lower.includes("tenant") && lower.includes("jwt")) {
-      return "Organizata në pajisjen tuaj nuk përputhet me sesionin. Dilni dhe hy përsëri me të njëjtin kod organizate.";
+      return "The organization on this device does not match your session. Sign out and sign in again with the same organization code.";
     }
     if (lower.includes("invalid tenant") || lower.includes("tenant identifier")) {
-      return "Kodi i organizatës nuk është i saktë. Kontrollojeni te administratori ose te Cilësimet.";
+      return "The organization code is not correct. Check it with your administrator or in Settings.";
     }
   }
 
   if (status === 404) {
-    return "Nuk u gjetën të dhëna.";
+    return "No data was found.";
   }
 
   if (status === 401) {
@@ -28,14 +28,14 @@ export function userFacingHttpMessage(status: number | undefined, serverText: st
       lower.includes("email") ||
       lower.includes("credentials")
     ) {
-      return "Email ose fjalëkalim i pasaktë, ose llogaria nuk është aktivizuar ende.";
+      return "The email or password is incorrect, or the account has not been activated yet.";
     }
-    return raw || "Ju lutem hyni përsëri.";
+    return raw || "Please sign in again.";
   }
 
   if (/^(get|post|put|patch|delete)\s+\//i.test(raw) || raw.includes("/api/")) {
-    return "Ndodhi një gabim gjatë lidhjes me serverin. Provoni përsëri ose kontaktoni mbështetjen.";
+    return "A server connection error occurred. Try again or contact support.";
   }
 
-  return raw || "Ndodhi një gabim. Provoni përsëri.";
+  return raw || "Something went wrong. Please try again.";
 }

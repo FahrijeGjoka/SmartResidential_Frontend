@@ -45,7 +45,7 @@ export default function MaintenancePage() {
     mutationFn: maintenanceApi.create,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["maintenance"] });
-      toast.success("Kërkesa u regjistrua");
+      toast.success("Request recorded");
       setOpen(false);
       form.reset();
     },
@@ -63,8 +63,8 @@ export default function MaintenancePage() {
   return (
     <div>
       <PageHeader
-        title="Mirëmbajtja"
-        description="Regjistroni kërkesa formale të lidhura me një çështje ekzistuese."
+        title="Maintenance"
+        description="Record formal requests linked to an existing issue."
         action={
           !technician ? (
             <Button
@@ -102,7 +102,7 @@ export default function MaintenancePage() {
                     <td className="px-6 py-4 font-medium text-secondary">#{m.issueId}</td>
                     <td className="px-6 py-4 text-slate-600">User #{m.requestedById}</td>
                     <td className="px-6 py-4 text-slate-500">
-                      {m.requestedAt ? new Date(m.requestedAt).toLocaleString() : "—"}
+                      {m.requestedAt ? new Date(m.requestedAt).toLocaleString() : "-"}
                     </td>
                   </tr>
                 ))}
@@ -119,7 +119,7 @@ export default function MaintenancePage() {
             <select className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" {...form.register("issueId")}>
               {(issuesQ.data ?? []).map((i) => (
                 <option key={i.id} value={i.id}>
-                  #{i.id} — {i.title}
+                  #{i.id} - {i.title}
                 </option>
               ))}
             </select>

@@ -10,10 +10,10 @@ import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 
 const schema = z.object({
-  tenantIdentifier: z.string().min(1, "Kodi i organizatës është i detyrueshëm"),
-  fullName: z.string().min(2, "Shkruani emrin e plotë"),
-  email: z.string().email("Email jo i vlefshëm"),
-  password: z.string().min(8, "Të paktën 8 karaktere"),
+  tenantIdentifier: z.string().min(1, "Organization code is required"),
+  fullName: z.string().min(2, "Enter your full name"),
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(8, "At least 8 characters"),
 });
 
 type Form = z.infer<typeof schema>;
@@ -35,7 +35,7 @@ export default function RegisterPage() {
         email: data.email,
         password: data.password,
       });
-      toast.success("Regjistrimi u pranua. Kontrolloni email-in për të verifikuar llogarinë para hyrjes.");
+      toast.success("Registration received. Check your email to verify the account before signing in.");
     } catch {
       /* axios */
     }
@@ -49,22 +49,22 @@ export default function RegisterPage() {
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-accent via-teal-600 to-primary text-white shadow-lg ring-4 ring-white/60">
             <Building2 className="h-7 w-7" />
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-secondary sm:text-3xl">Hap llogari banori</h1>
+          <h1 className="mt-4 text-2xl font-bold text-secondary sm:text-3xl">Create resident account</h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
-            Përdorni të njëjtin kod organizate që ju ka dhënë operatori i ndërtesës ose kompania.
+            Use the same organization code provided by your building operator or company.
           </p>
         </div>
         <Card className="border-teal-100/80 bg-white/90 shadow-xl backdrop-blur-sm">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Kodi i organizatës</label>
-              <Input placeholder="p.sh. skyline-towers" {...register("tenantIdentifier")} />
+              <label className="mb-1 block text-xs font-medium text-slate-600">Organization code</label>
+              <Input placeholder="e.g. skyline-towers" {...register("tenantIdentifier")} />
               {errors.tenantIdentifier ? (
                 <p className="mt-1 text-xs text-red-600">{errors.tenantIdentifier.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">Emri i plotë</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">Full name</label>
               <Input {...register("fullName")} />
               {errors.fullName ? <p className="mt-1 text-xs text-red-600">{errors.fullName.message}</p> : null}
             </div>
@@ -79,13 +79,13 @@ export default function RegisterPage() {
               {errors.password ? <p className="mt-1 text-xs text-red-600">{errors.password.message}</p> : null}
             </div>
             <Button type="submit" className="w-full shadow-md" loading={isSubmitting}>
-              Dërgo regjistrimin
+              Submit registration
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-slate-600">
-            Tashmë e verifikuat email-in?{" "}
+            Already verified your email?{" "}
             <Link className="font-medium text-primary hover:underline" to="/login">
-              Hyr
+              Sign in
             </Link>
           </p>
         </Card>

@@ -43,7 +43,7 @@ export default function CategoriesPage() {
     mutationFn: ({ id, body }: { id: number; body: Form }) => issueCategoryApi.update(id, body),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["issue-categories"] });
-      toast.success("Kategoria u përditësua");
+      toast.success("Category updated");
       setModal(null);
       setSelected(null);
     },
@@ -66,8 +66,8 @@ export default function CategoriesPage() {
   return (
     <div>
       <PageHeader
-        title="Kategoritë e kërkesave"
-        description="Gruponi llojet e defektit (ujë, elektricitet, etj.) për raportime më të qarta."
+        title="Issue categories"
+        description="Group issue types for clearer reporting."
         action={
           <Button className="gap-2" onClick={() => { form.reset({ name: "", description: "" }); setModal("create"); }}>
             <Plus className="h-4 w-4" /> New category
@@ -93,7 +93,7 @@ export default function CategoriesPage() {
                 {(listQ.data ?? []).map((c) => (
                   <tr key={c.id}>
                     <td className="px-6 py-4 font-medium text-secondary">{c.name}</td>
-                    <td className="px-6 py-4 text-slate-600">{c.description || "—"}</td>
+                    <td className="px-6 py-4 text-slate-600">{c.description || "-"}</td>
                     <td className="px-6 py-4 text-right">
                       <button type="button" className="mr-2 p-2 text-slate-500 hover:text-primary" onClick={() => openEdit(c)}>
                         <Pencil className="h-4 w-4" />

@@ -82,13 +82,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         {staff ? <Item to="/app/buildings" icon={Building2} label="Buildings" /> : null}
         {staff ? <Item to="/app/apartments" icon={Layers} label="Apartments" /> : null}
         {staff ? <Item to="/app/residents" icon={Users} label="Residents" /> : null}
-        <Item to="/app/issues" icon={Wrench} label="Service issues" />
-        <Item to="/app/maintenance" icon={ClipboardList} label="Maintenance requests" />
+        <Item to="/app/issues" icon={Wrench} label="Issues" />
+        <Item to="/app/maintenance" icon={ClipboardList} label="Maintenance" />
         <Item to="/app/announcements" icon={Megaphone} label="Announcements" />
         <Item to="/app/notifications" icon={Bell} label="Notifications" badge={unreadCount} />
         {staff ? <Item to="/app/technicians" icon={Users2} label="Technicians" /> : null}
         {staff ? <Item to="/app/categories" icon={Tags} label="Issue categories" /> : null}
-        {admin ? <Item to="/app/admin/users" icon={Shield} label="Admin · Users" /> : null}
+        {admin ? <Item to="/app/admin/users" icon={Shield} label="Admin - Users" /> : null}
         <Item to="/app/billing" icon={CreditCard} label="Billing" />
         <Item to="/app/profile" icon={UserCircle} label="Profile" />
         <Item to="/app/settings" icon={Settings} label="Settings" />

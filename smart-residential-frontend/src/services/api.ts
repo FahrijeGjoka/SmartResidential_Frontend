@@ -78,7 +78,7 @@ api.interceptors.response.use(
         window.location.pathname.startsWith("/register");
       if (!onAuthPage) {
         clearSession();
-        toast.error("Sesioni skadoi. Hyni përsëri.");
+        toast.error("Your session expired. Please sign in again.");
         window.location.assign("/login");
       }
     } else if (status && status >= 400) {

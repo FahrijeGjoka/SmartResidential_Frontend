@@ -85,8 +85,8 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader
-        title="Pulti kryesor"
-        description="Përmbledhje e shpejtë: ndërtesa, apartamente, kërkesat dhe njoftimet — sipas rolit tuaj në sistem."
+        title="Dashboard"
+        description="A quick summary of buildings, apartments, issues, and announcements based on your role."
       />
       {loading ? (
         <div className="flex justify-center py-20">
@@ -96,36 +96,36 @@ export default function DashboardPage() {
         <>
           {technician ? (
             <Card className="mb-6 border-teal-200/80 bg-gradient-to-r from-teal-50 via-white to-indigo-50 !p-4 text-sm text-teal-950 shadow-sm">
-              Si teknik, punoni mbi çështje specifike: hapni një kërkesë me numrin e saj nga faqja «Kërkesat e shërbimit».
+              As a technician, you work on specific issues. Open an issue by its ID from the Issues page.
             </Card>
           ) : null}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {staff ? (
               <>
-                <Stat label="Ndërtesa" value={buildings ?? "—"} icon={Building2} />
-                <Stat label="Apartamentet" value={apartments ?? "—"} icon={Layers} />
-                <Stat label="Kërkesat" value={issuesCount ?? "—"} icon={Wrench} />
-                <Stat label="Njoftimet" value={announcements} icon={Megaphone} />
+                <Stat label="Buildings" value={buildings ?? "-"} icon={Building2} />
+                <Stat label="Apartments" value={apartments ?? "-"} icon={Layers} />
+                <Stat label="Issues" value={issuesCount ?? "-"} icon={Wrench} />
+                <Stat label="Announcements" value={announcements} icon={Megaphone} />
               </>
             ) : resident ? (
               <>
                 <Stat
-                  label="Kërkesat e mia"
-                  value={issuesCount ?? "—"}
+                  label="My issues"
+                  value={issuesCount ?? "-"}
                   icon={Wrench}
-                  hint="Listohen vetëm kërkesat që keni hapur ju."
+                  hint="Only issues you opened are listed."
                 />
-                <Stat label="Njoftimet" value={announcements} icon={Megaphone} />
+                <Stat label="Announcements" value={announcements} icon={Megaphone} />
               </>
             ) : (
               <>
                 <Stat
-                  label="Hapësira e teknikut"
-                  value="Sipas kërkesës"
+                  label="Technician workspace"
+                  value="By request"
                   icon={Wrench}
-                  hint="Përdorni kërkimin me ID në faqen e kërkesave."
+                  hint="Use the issue ID search on the issues page."
                 />
-                <Stat label="Njoftimet" value={announcements} icon={Megaphone} />
+                <Stat label="Announcements" value={announcements} icon={Megaphone} />
               </>
             )}
           </div>
