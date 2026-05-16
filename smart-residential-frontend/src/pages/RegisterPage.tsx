@@ -37,7 +37,7 @@ export default function RegisterPage() {
       });
       toast.success("Regjistrimi u pranua. Kontrolloni email-in për të verifikuar llogarinë para hyrjes.");
     } catch {
-      /* axios */
+      /* Error toast is handled globally by the Axios interceptor. */
     }
   };
 
