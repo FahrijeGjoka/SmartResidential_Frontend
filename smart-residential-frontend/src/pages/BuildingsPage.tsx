@@ -34,7 +34,7 @@ export default function BuildingsPage() {
     mutationFn: buildingApi.create,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["buildings"] });
-      toast.success("Ndërtesa u krijua");
+      toast.success("Building created");
       setModal(null);
       form.reset();
     },
@@ -44,7 +44,7 @@ export default function BuildingsPage() {
     mutationFn: ({ id, body }: { id: number; body: Form }) => buildingApi.update(id, body),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["buildings"] });
-      toast.success("Ndërtesa u përditësua");
+      toast.success("Building updated");
       setModal(null);
       setSelected(null);
     },
@@ -54,7 +54,7 @@ export default function BuildingsPage() {
     mutationFn: buildingApi.remove,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["buildings"] });
-      toast.success("Ndërtesa u fshi");
+      toast.success("Building deleted");
     },
   });
 
@@ -72,8 +72,8 @@ export default function BuildingsPage() {
   return (
     <div>
       <PageHeader
-        title="Ndërtesat"
-        description="Shtoni dhe përditësoni ndërtesat e portofolit tuaj."
+        title="Buildings"
+        description="Add and update buildings in your portfolio."
         action={
           <Button
             className="gap-2"

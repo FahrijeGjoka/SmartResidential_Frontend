@@ -19,7 +19,7 @@ import {
   canDeleteIssue,
 } from "@/utils/roles";
 
-const STATUSES = ["OPEN", "ASSIGNED", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+const MANUAL_STATUSES = ["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
 
 export default function IssueDetailPage() {
   const { id: idParam } = useParams();
@@ -55,7 +55,7 @@ export default function IssueDetailPage() {
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["issue", id] });
       await qc.invalidateQueries({ queryKey: ["issues"] });
-      toast.success("Statusi u përditësua");
+      toast.success("Status updated");
     },
   });
 
@@ -64,14 +64,14 @@ export default function IssueDetailPage() {
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["issue", id] });
       await qc.invalidateQueries({ queryKey: ["issues"] });
-      toast.success("Tekniku u caktua");
+      toast.success("Technician assigned");
     },
   });
 
   const deleteM = useMutation({
     mutationFn: () => issueApi.remove(id),
     onSuccess: async () => {
-      toast.success("Kërkesa u fshi");
+      toast.success("Issue deleted");
       window.location.href = "/app/issues";
     },
   });
@@ -81,7 +81,7 @@ export default function IssueDetailPage() {
     onSuccess: async () => {
       setComment("");
       await qc.invalidateQueries({ queryKey: ["comments", id] });
-      toast.success("Komenti u shtua");
+      toast.success("Comment added");
     },
   });
 
@@ -90,6 +90,8 @@ export default function IssueDetailPage() {
   const statusControls = useMemo(() => canChangeIssueStatus(role), [role]);
   const assignControls = useMemo(() => canAssignTechnician(role), [role]);
   const deleteControls = useMemo(() => canDeleteIssue(role), [role]);
+  const selectedManualStatus =
+    status ?? (MANUAL_STATUSES.includes(issue?.status ?? "") ? issue?.status ?? "" : "");
 
   if (!validId) {
     return (
@@ -114,7 +116,7 @@ export default function IssueDetailPage() {
     return (
       <Card>
         <p className="text-sm text-red-600">
-          Nuk mund të hapet kjo kërkesë: ose numri është i gabuar, ose nuk keni leje (p.sh. si banor mund të shihni vetëm kërkesat tuaja). Nëse shfaqet shpesh «403», pyesni administratorin për rolin ose të dhënat në sistem.
+          This issue cannot be opened. The number may be incorrect, or you may not have permission to view it.
         </p>
         <Link className="mt-4 inline-flex items-center gap-2 text-primary" to="/app/issues">
           <ArrowLeft className="h-4 w-4" /> Back to issues
@@ -133,7 +135,7 @@ export default function IssueDetailPage() {
       </Link>
       <PageHeader
         title={issue.title}
-        description={`Issue #${issue.id} · Apartment ${issue.apartmentId}`}
+        description={`Issue #${issue.id} - Apartment ${issue.apartmentId}`}
         action={
           deleteControls ? (
             <Button
@@ -152,7 +154,7 @@ export default function IssueDetailPage() {
         <div className="space-y-6 lg:col-span-2">
           <Card>
             <h3 className="text-sm font-semibold text-secondary">Description</h3>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{issue.description || "—"}</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{issue.description || "-"}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Badge tone="accent">{issue.status}</Badge>
               <Badge tone="primary">{issue.priority}</Badge>
@@ -165,7 +167,7 @@ export default function IssueDetailPage() {
               {(commentsQ.data ?? []).map((c) => (
                 <div key={c.id} className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-sm">
                   <div className="text-xs text-slate-500">
-                    User #{c.userId} · {new Date(c.timestamp).toLocaleString()}
+                    User #{c.userId} - {new Date(c.timestamp).toLocaleString()}
                   </div>
                   <p className="mt-1 text-slate-800">{c.content}</p>
                 </div>
@@ -175,7 +177,7 @@ export default function IssueDetailPage() {
             {userId ? (
               <div className="mt-4 flex gap-2">
                 <Input
-                  placeholder="Write an update…"
+                  placeholder="Write an update..."
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
@@ -189,33 +191,40 @@ export default function IssueDetailPage() {
         <div className="space-y-6">
           {statusControls ? (
             <Card>
-              <h3 className="text-sm font-semibold text-secondary">Ndrysho statusin</h3>
+              <h3 className="text-sm font-semibold text-secondary">Change status</h3>
               <div className="mt-3 flex flex-col gap-2">
                 <select
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  value={status ?? issue.status}
+                  value={selectedManualStatus}
                   onChange={(e) => setStatus(e.target.value)}
                 >
-                  {STATUSES.map((s) => (
+                  {selectedManualStatus ? null : <option value="">Select next status</option>}
+                  {MANUAL_STATUSES.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
                   ))}
                 </select>
+                {issue.status === "ASSIGNED" ? (
+                  <p className="text-xs leading-5 text-slate-500">
+                    Assigned status is controlled by the technician assignment action.
+                  </p>
+                ) : null}
                 <Button
                   type="button"
                   variant="secondary"
                   loading={statusM.isPending}
-                  onClick={() => statusM.mutate(status ?? issue.status)}
+                  disabled={!selectedManualStatus}
+                  onClick={() => selectedManualStatus && statusM.mutate(selectedManualStatus)}
                 >
-                  Apliko
+                  Apply
                 </Button>
               </div>
             </Card>
           ) : null}
           {assignControls ? (
             <Card>
-              <h3 className="text-sm font-semibold text-secondary">Cakto teknikun</h3>
+              <h3 className="text-sm font-semibold text-secondary">Assign technician</h3>
               <div className="mt-3 flex flex-col gap-2">
                 <select
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
@@ -225,7 +234,7 @@ export default function IssueDetailPage() {
                   <option value="">Select technician user</option>
                   {(techQ.data ?? []).map((t) => (
                     <option key={t.id} value={t.userId}>
-                      User #{t.userId} · {t.specialization}
+                      User #{t.userId} - {t.specialization}
                     </option>
                   ))}
                 </select>
@@ -235,7 +244,7 @@ export default function IssueDetailPage() {
                   disabled={assignTechUserId === ""}
                   onClick={() => assignTechUserId !== "" && assignM.mutate()}
                 >
-                  Cakto
+                  Assign
                 </Button>
               </div>
             </Card>

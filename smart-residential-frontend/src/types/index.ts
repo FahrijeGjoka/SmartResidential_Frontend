@@ -155,6 +155,11 @@ export type TechnicianProfileResponse = {
   specialization: string;
   isAvailable: boolean;
 };
+export type CreateTechnicianProfileRequest = {
+  userId: number;
+  specialization?: string;
+  isAvailable?: boolean;
+};
 
 export type CommentResponse = {
   id: number;

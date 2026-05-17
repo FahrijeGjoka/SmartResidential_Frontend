@@ -37,7 +37,7 @@ export default function HomePage() {
             </h1>
             <p className="mt-5 text-lg text-slate-600">
               SmartResidential pairs a multi-tenant Spring Boot API with a modern dashboard for
-              staff, technicians, and residents — tuned for real apartment portfolios.
+              staff, technicians, and residents - tuned for real apartment portfolios.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link to="/onboarding">
@@ -58,7 +58,7 @@ export default function HomePage() {
                 icon: Building2,
               },
               {
-                title: "Service issues",
+                title: "Issues",
                 body: "Residents open issues; staff triage, assign technicians, and track status through resolution.",
                 icon: Shield,
               },

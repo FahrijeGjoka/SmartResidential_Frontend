@@ -40,18 +40,18 @@ export function AppLayout() {
             <div className="hidden min-w-0 sm:block">
               <div className="truncate text-sm font-medium text-secondary">{email}</div>
               <div className="truncate text-xs text-slate-500">
-                {role?.replace("ROLE_", "")} · Organizata:{" "}
+                {role?.replace("ROLE_", "")} - Organization:{" "}
                 <span className="font-medium text-indigo-700">{tenantIdentifier}</span>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/" className="hidden text-sm font-medium text-indigo-700 hover:text-primary sm:inline">
-              Faqja kryesore
+              Home
             </Link>
             <Button type="button" variant="ghost" className="!px-3" onClick={onLogout}>
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Dil</span>
+              <span className="hidden sm:inline">Sign out</span>
             </Button>
           </div>
         </header>

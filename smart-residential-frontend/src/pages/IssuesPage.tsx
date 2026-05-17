@@ -61,7 +61,7 @@ export default function IssuesPage() {
     mutationFn: issueApi.create,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["issues"] });
-      toast.success("Kërkesa u regjistrua");
+      toast.success("Issue created");
       setModal(false);
       form.reset({ title: "", description: "", priority: "MEDIUM", apartmentId: 0, categoryId: "" });
     },
@@ -87,15 +87,15 @@ export default function IssuesPage() {
     return (
       <div>
         <PageHeader
-          title="Kërkesat e shërbimit"
-          description="Shkruani numrin e kërkesës që ju ka dhënë stafi, pastaj hapeni."
+          title="Issues"
+          description="Enter an issue ID, then open it."
         />
         <Card className="max-w-md border-indigo-100/80 bg-gradient-to-br from-white to-indigo-50/40">
-          <label className="mb-1 block text-xs font-medium text-slate-600">Numri i kërkesës</label>
+          <label className="mb-1 block text-xs font-medium text-slate-600">Issue ID</label>
           <div className="flex gap-2">
-            <Input value={lookup} onChange={(e) => setLookup(e.target.value)} placeholder="p.sh. 12" />
+            <Input value={lookup} onChange={(e) => setLookup(e.target.value)} placeholder="e.g. 12" />
             <Button type="button" className="gap-2 shadow-md" onClick={() => navigate(`/app/issues/${lookup.trim()}`)}>
-              <Search className="h-4 w-4" /> Hap
+              <Search className="h-4 w-4" /> Open
             </Button>
           </div>
         </Card>
@@ -106,11 +106,11 @@ export default function IssuesPage() {
   return (
     <div>
       <PageHeader
-        title="Kërkesat e shërbimit"
+        title="Issues"
         description={
           staff
-            ? "Shihni të gjitha kërkesat e portofolit dhe filtroni sipas statusit."
-            : "Këtu shfaqen vetëm kërkesat që keni hapur ju si banor."
+            ? "View all portfolio issues and filter by status."
+            : "Only issues you opened as a resident are shown here."
         }
         action={
           <Button
@@ -121,7 +121,7 @@ export default function IssuesPage() {
               setModal(true);
             }}
           >
-            <Plus className="h-4 w-4" /> Kërkesë e re
+            <Plus className="h-4 w-4" /> New issue
           </Button>
         }
       />
@@ -138,7 +138,7 @@ export default function IssuesPage() {
                   : "bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-primary/30"
               }`}
             >
-              {s || "Të gjitha"}
+              {s || "All"}
             </button>
           ))}
         </div>
@@ -175,7 +175,7 @@ export default function IssuesPage() {
                       <Badge tone={priorityTone(issue.priority)}>{issue.priority}</Badge>
                     </td>
                     <td className="px-6 py-4 text-slate-500">
-                      {issue.updatedAt ? new Date(issue.updatedAt).toLocaleString() : "—"}
+                      {issue.updatedAt ? new Date(issue.updatedAt).toLocaleString() : "-"}
                     </td>
                   </tr>
                 ))}
@@ -185,7 +185,7 @@ export default function IssuesPage() {
         )}
       </Card>
 
-      <Modal open={modal} onClose={() => setModal(false)} title="Kërkesë e re">
+      <Modal open={modal} onClose={() => setModal(false)} title="New issue">
         <form className="space-y-4" onSubmit={form.handleSubmit(onCreate)}>
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-600">Title</label>
@@ -210,7 +210,7 @@ export default function IssuesPage() {
             <select className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" {...form.register("apartmentId")}>
               {(apartmentsQ.data ?? []).map((a) => (
                 <option key={a.id} value={a.id}>
-                  Unit {a.unitNumber} · building {a.buildingId}
+                  Unit {a.unitNumber} - building {a.buildingId}
                 </option>
               ))}
             </select>
@@ -218,7 +218,7 @@ export default function IssuesPage() {
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-600">Category (optional)</label>
             <select className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" {...form.register("categoryId")}>
-              <option value="">—</option>
+              <option value="">-</option>
               {(categoriesQ.data ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}

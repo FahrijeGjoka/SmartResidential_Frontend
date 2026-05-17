@@ -13,6 +13,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { residentApi } from "@/services/residentService";
 import { userApi } from "@/services/userService";
 import { apartmentApi } from "@/services/apartmentService";
+import { roleApi } from "@/services/roleService";
 import type { ResidentProfileResponse } from "@/types";
 
 const schema = z.object({
@@ -30,6 +31,7 @@ export default function ResidentsPage() {
 
   const residentsQ = useQuery({ queryKey: ["residents"], queryFn: residentApi.list });
   const usersQ = useQuery({ queryKey: ["users"], queryFn: userApi.listActive });
+  const rolesQ = useQuery({ queryKey: ["roles"], queryFn: roleApi.list });
   const apartmentsQ = useQuery({ queryKey: ["apartments"], queryFn: apartmentApi.list });
 
   const form = useForm<Form>({ resolver: zodResolver(schema) });
@@ -38,7 +40,7 @@ export default function ResidentsPage() {
     mutationFn: residentApi.create,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["residents"] });
-      toast.success("Banori u lidh me apartamentin");
+      toast.success("Resident linked to apartment");
       setModal(null);
       form.reset();
     },
@@ -53,7 +55,7 @@ export default function ResidentsPage() {
       }),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["residents"] });
-      toast.success("Të dhënat u përditësuan");
+      toast.success("Resident details updated");
       setModal(null);
       setSelected(null);
     },
@@ -63,7 +65,7 @@ export default function ResidentsPage() {
     mutationFn: residentApi.remove,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["residents"] });
-      toast.success("Lidhja u hoq");
+      toast.success("Resident link removed");
     },
   });
 
@@ -71,6 +73,13 @@ export default function ResidentsPage() {
     const u = usersQ.data?.find((x) => x.id === id);
     return u ? `${u.firstName ?? ""} ${u.lastName ?? ""} (${u.email})`.trim() : `User #${id}`;
   };
+
+  const roleName = (id: number) => rolesQ.data?.find((r) => r.id === id)?.name ?? "";
+  const isUserLinked = (userId: number) => residentsQ.data?.some((resident) => resident.userId === userId) ?? false;
+  const residentUsers = (usersQ.data ?? []).filter(
+    (user) => roleName(user.roleId).trim().toUpperCase() === "ROLE_RESIDENT"
+  );
+  const linkableResidentUsers = residentUsers.filter((user) => !isUserLinked(user.id));
 
   const aptLabel = (id: number) => {
     const a = apartmentsQ.data?.find((x) => x.id === id);
@@ -88,6 +97,16 @@ export default function ResidentsPage() {
   };
 
   const onSubmit = (values: Form) => {
+    if (!residentUsers.some((user) => user.id === values.userId)) {
+      toast.error("Only users with the resident role can be linked as residents.");
+      return;
+    }
+
+    if (modal === "create" && isUserLinked(values.userId)) {
+      toast.error(`${userLabel(values.userId)} is already linked as a resident.`);
+      return;
+    }
+
     const movedInAt = values.movedInAt ? new Date(values.movedInAt).toISOString() : undefined;
     if (modal === "create")
       createM.mutate({
@@ -105,14 +124,14 @@ export default function ResidentsPage() {
   return (
     <div>
       <PageHeader
-        title="Banorët"
-        description="Lidhni përdoruesit me apartamentet dhe datën e hyrjes."
+        title="Residents"
+        description="Link users to apartments and move-in dates."
         action={
           <Button
             className="gap-2"
             onClick={() => {
               form.reset({
-                userId: usersQ.data?.[0]?.id ?? 0,
+                userId: linkableResidentUsers[0]?.id ?? 0,
                 apartmentId: apartmentsQ.data?.[0]?.id ?? 0,
                 movedInAt: "",
               });
@@ -124,7 +143,7 @@ export default function ResidentsPage() {
         }
       />
       <Card padding="p-0" className="overflow-hidden">
-        {residentsQ.isLoading ? (
+        {residentsQ.isLoading || usersQ.isLoading || rolesQ.isLoading ? (
           <div className="flex justify-center py-16">
             <Spinner />
           </div>
@@ -145,7 +164,7 @@ export default function ResidentsPage() {
                     <td className="px-6 py-4 font-medium text-secondary">{userLabel(r.userId)}</td>
                     <td className="px-6 py-4 text-slate-600">{aptLabel(r.apartmentId)}</td>
                     <td className="px-6 py-4 text-slate-500">
-                      {r.movedInAt ? new Date(r.movedInAt).toLocaleString() : "—"}
+                      {r.movedInAt ? new Date(r.movedInAt).toLocaleString() : "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
@@ -181,42 +200,48 @@ export default function ResidentsPage() {
         }}
         title={modal === "create" ? "Link resident" : "Edit resident profile"}
       >
-        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">User</label>
-            <select className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" {...form.register("userId")}>
-              {(usersQ.data ?? []).map((u) => (
-                <option key={u.id} value={u.id}>
-                  {userLabel(u.id)}
-                </option>
-              ))}
-            </select>
+        {modal === "create" && !linkableResidentUsers.length ? (
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm text-slate-600">
+            All resident users are already linked to apartments.
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Apartment</label>
-            <select
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
-              {...form.register("apartmentId")}
-            >
-              {(apartmentsQ.data ?? []).map((a) => (
-                <option key={a.id} value={a.id}>
-                  {aptLabel(a.id)} (building {a.buildingId})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Move-in (optional)</label>
-            <input
-              type="datetime-local"
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
-              {...form.register("movedInAt")}
-            />
-          </div>
-          <Button type="submit" className="w-full" loading={createM.isPending || updateM.isPending}>
-            Save
-          </Button>
-        </form>
+        ) : (
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-600">User</label>
+              <select className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" {...form.register("userId")}>
+                {(modal === "create" ? linkableResidentUsers : residentUsers).map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {userLabel(u.id)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-600">Apartment</label>
+              <select
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
+                {...form.register("apartmentId")}
+              >
+                {(apartmentsQ.data ?? []).map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {aptLabel(a.id)} (building {a.buildingId})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-600">Move-in (optional)</label>
+              <input
+                type="datetime-local"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
+                {...form.register("movedInAt")}
+              />
+            </div>
+            <Button type="submit" className="w-full" loading={createM.isPending || updateM.isPending}>
+              Save
+            </Button>
+          </form>
+        )}
       </Modal>
     </div>
   );

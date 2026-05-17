@@ -47,7 +47,7 @@ export default function ApartmentsPage() {
     mutationFn: ({ id, body }: { id: number; body: Form }) => apartmentApi.update(id, body),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["apartments"] });
-      toast.success("Apartamenti u përditësua");
+      toast.success("Apartment updated");
       setModal(null);
       setSelected(null);
     },
@@ -81,8 +81,8 @@ export default function ApartmentsPage() {
   return (
     <div>
       <PageHeader
-        title="Apartamentet"
-        description="Njësitë e banimit të lidhura me ndërtesat."
+        title="Apartments"
+        description="Residential units linked to buildings."
         action={
           <Button
             className="gap-2"
