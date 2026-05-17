@@ -8,7 +8,6 @@ import {
   Wrench,
   Megaphone,
   Bell,
-  CreditCard,
   UserCircle,
   Settings,
   Shield,
@@ -89,7 +88,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         {staff ? <Item to="/app/technicians" icon={Users2} label="Technicians" /> : null}
         {staff ? <Item to="/app/categories" icon={Tags} label="Issue categories" /> : null}
         {admin ? <Item to="/app/admin/users" icon={Shield} label="Admin - Users" /> : null}
-        <Item to="/app/billing" icon={CreditCard} label="Billing" />
         <Item to="/app/profile" icon={UserCircle} label="Profile" />
         <Item to="/app/settings" icon={Settings} label="Settings" />
       </nav>

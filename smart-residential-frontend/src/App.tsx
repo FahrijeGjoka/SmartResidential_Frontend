@@ -22,7 +22,6 @@ import CategoriesPage from "@/pages/CategoriesPage";
 import TechniciansPage from "@/pages/TechniciansPage";
 import ProfilePage from "@/pages/ProfilePage";
 import SettingsPage from "@/pages/SettingsPage";
-import BillingPage from "@/pages/BillingPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function App() {
@@ -104,7 +103,6 @@ export default function App() {
             </AdminRoute>
           }
         />
-        <Route path="billing" element={<BillingPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
