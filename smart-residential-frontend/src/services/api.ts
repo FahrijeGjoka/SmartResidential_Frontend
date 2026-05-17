@@ -52,10 +52,15 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  const url = config.url ?? "";
+  const isPublicAuthEndpoint =
+    url.startsWith("/api/auth/login") ||
+    url.startsWith("/api/auth/signup") ||
+    url.startsWith("/api/auth/verify");
   const token = getStoredToken();
   const tenant = getStoredTenantIdentifier();
 
-  if (token) {
+  if (token && !isPublicAuthEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
